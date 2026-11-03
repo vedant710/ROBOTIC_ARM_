@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <world name="default">
+
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"/>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"/>
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"/>
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <gravity>0 0 -9.81</gravity>
+
+    <scene>
+      <shadows>true</shadows>
+      <ambient>0.5 0.5 0.5 1</ambient>
+      <background>0.7 0.8 1.0 1</background>
+    </scene>
+
+    <!-- Local sun (no internet / Fuel download needed) -->
+    <light type="directional" name="sun">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.9 0.9 0.9 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><plane><normal>0 0 1</normal></plane></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><plane><normal>0 0 1</normal><size>20 20</size></plane></geometry>
+          <material><ambient>0.7 0.7 0.7 1</ambient><diffuse>0.8 0.8 0.8 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Table: centre (0.35, 0), x from -0.15 to 0.85, top surface z = 0.7.
+         The arm is spawned at (0, 0, 0.7) by the launch file. -->
+    <include>
+      <uri>model://table</uri>
+      <name>table</name>
+      <pose>0.35 0 0 0 0 0</pose>
+    </include>
+
+    <!-- Boxes sit on the table top (z = 0.7 + 0.06/2 = 0.73) -->
+    <include>
+      <uri>model://aruco_box_red</uri>
+      <name>box_red</name>
+      <pose>0.40 0.15 0.73 0 0 0.3</pose>
+    </include>
+    <include>
+      <uri>model://aruco_box_green</uri>
+      <name>box_green</name>
+      <pose>0.50 -0.10 0.73 0 0 -0.2</pose>
+    </include>
+    <include>
+      <uri>model://aruco_box_blue</uri>
+      <name>box_blue</name>
+      <pose>0.30 -0.25 0.73 0 0 0.1</pose>
+    </include>
+
+    <!-- Overhead camera: 1.2 m above the table top (z = 0.70 + 1.2 = 1.90), centred on the table.
+         Looks straight down. In the image: up = world +x (away from arm), right = world -y.
+         HFOV 1.0 rad at 1.2 m covers about 1.31 x 0.98 m, so the whole 1.0 x 0.9 m table fits. -->
+    <model name="overhead_camera">
+      <static>true</static>
+      <pose>0.35 0 1.90 0 1.5708 0</pose>
+      <link name="link">
+        <visual name="body">
+          <geometry><box><size>0.04 0.08 0.04</size></box></geometry>
+          <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+        </visual>
+        <sensor name="overhead_cam" type="camera">
+          <always_on>true</always_on>
+          <update_rate>15</update_rate>
+          <visualize>false</visualize>
+          <topic>overhead_camera/image_raw</topic>
+          <gz_frame_id>overhead_camera_optical_frame</gz_frame_id>
+          <camera>
+            <horizontal_fov>1.0</horizontal_fov>
+            <image>
+              <width>1280</width>
+              <height>960</height>
+              <format>R8G8B8</format>
+            </image>
+            <clip><near>0.1</near><far>5.0</far></clip>
+          </camera>
+        </sensor>
+      </link>
+    </model>
+
+  </world>
+</sdf>
