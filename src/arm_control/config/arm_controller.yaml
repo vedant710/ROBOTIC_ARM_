@@ -1,0 +1,19 @@
+arm_controller:
+  ros__parameters:
+    base_frame: base_link
+    tip_link: flange
+    tcp_offset: [0.0, 0.0, 0.105]      # TCP position in the flange frame (metres). Change when you add a gripper.
+    trajectory_action: /joint_trajectory_controller/follow_joint_trajectory
+    initial_mode: joint                # joint | tcp
+    cancel_on_mode_switch: true        # switching modes stops any running motion
+    joint_speed_scale: 0.3             # fraction of the URDF joint velocity limits
+    tcp_linear_speed: 0.10             # m/s
+    tcp_angular_speed: 0.5             # rad/s
+    cartesian_step: 0.01               # IK resolution along straight lines (m)
+    angular_step: 0.05                 # IK resolution for rotation (rad)
+    # tool-down pose over the table centre (x 0.35, y 0, z 0.30 in the arm base frame)
+    home_joints: [-2.306, -1.062, -1.355, 1.715, -1.033, 1.686, 2.639]
+    marker_pose_topic: /perception/marker_pose
+    marker_timeout: 2.0                # s, goto_marker refuses older marker poses
+    marker_approach_offset: [0.0, 0.0, 0.12]   # added to the marker position, in the base frame
+    marker_approach_quat: [1.0, 0.0, 0.0, 0.0] # x y z w, (1,0,0,0) = tool pointing down
